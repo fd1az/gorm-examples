@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fd1az/gorm-examples/model"
+	"github.com/shopspring/decimal"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -49,6 +50,30 @@ func main() {
 		fmt.Println("*------------------------*")
 	}
 
+	//Create Product
+	price, err := decimal.NewFromString("99.99")
+	if err != nil {
+		panic(err)
+	}
+	product1 := model.Product{
+		Title:       "producto1",
+		Description: "el mejor producto del mundo",
+		Price:       price,
+	}
+
+	err = CreateProduct(db, &product1)
+
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("ID: ", product1.ID)
+	fmt.Println("Title: ", product1.Title)
+	fmt.Println("Description", product1.Description)
+	fmt.Println("Price", product1.Price)
+	fmt.Println("Email", product1.Description)
+	fmt.Println("CreatedAt", product1.CreatedAt)
+	fmt.Println("UpdatedAt", product1.UpdatedAt)
+	fmt.Println("*------------------------*")
 }
 
 // createGomDB configuración de acceso a datos y GORM
@@ -92,6 +117,7 @@ func createGomDB(cfg *DbConfig) *gorm.DB {
 }
 
 // closeGormDBConnection cierra conexiones a DB relacional
+
 func closeGormDBConnection(db *gorm.DB) {
 	stmtManger, ok := db.ConnPool.(*gorm.PreparedStmtDB)
 
@@ -118,4 +144,8 @@ func GetAllUsers(db *gorm.DB, users []model.User) []model.User {
 	fmt.Println("Error", rs.Error)               // returns error or nil
 
 	return users
+}
+
+func CreateProduct(db *gorm.DB, p *model.Product) error {
+	return db.Create(&p).Error
 }

@@ -1,8 +1,6 @@
 package model
 
 import (
-	"database/sql"
-
 	"gorm.io/gorm"
 )
 
@@ -16,7 +14,6 @@ type User struct {
 	gorm.Model
 	Name  string
 	Email string
-	Phone sql.NullString
 }
 
 // equals
