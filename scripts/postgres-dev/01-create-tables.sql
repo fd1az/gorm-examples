@@ -35,6 +35,13 @@ CREATE TABLE "orders_products" (
     "id" serial NOT NULL,
     "orders_id" serial NOT NULL constraint fk_orders_products_orders references orders (id),
     "product_id" serial NOT NULL constraint fk_orders_products_products references products (id),
-    "price" numeric NOT NULL DEFAULT 0.0,
+    "unit_price" numeric NOT NULL DEFAULT 0.0,
     "quantity" numeric NOT NULL
 );
+
+[{
+    {1 2021-10-28 16:17:56.252189 -0300 -03 2021-10-28 16:17:56.252189 -0300 -03 
+    {0001-01-01 00:00:00 +0000 UTC false}
+    } user1
+     some1@email.com
+      { false}}
