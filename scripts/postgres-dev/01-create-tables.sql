@@ -31,10 +31,11 @@ CREATE TABLE IF NOT EXISTS "orders" (
     "deleted_at" timestamp with time zone default NULL
 );
 
-CREATE TABLE IF NOT EXISTS "orders_products" (
+CREATE TABLE IF NOT EXISTS "order_products" (
     "id" serial NOT NULL,
-    "orders_id" serial NOT NULL constraint fk_orders_products_orders references orders (id),
-    "product_id" serial NOT NULL constraint fk_orders_products_products references products (id),
+    "order_id" serial NOT NULL constraint fk_order_products_orders references orders (id),
+    "product_id" serial NOT NULL constraint fk_order_products_products references products (id),
     "unit_price" numeric NOT NULL DEFAULT 0.0,
-    "quantity" numeric NOT NULL
+    "quantity" numeric NOT NULL,
+    CONSTRAINT ux_order_id_product_id UNIQUE ("order_id", "product_id")
 );

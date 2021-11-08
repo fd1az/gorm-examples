@@ -7,6 +7,7 @@ import (
 
 type Order struct {
 	gorm.Model
+	User         User
 	UserID       uint
 	Total        decimal.Decimal
 	Status       string
@@ -18,7 +19,6 @@ func (Order) TableName() string {
 }
 
 type OrderProduct struct {
-	gorm.Model
 	OrderID   uint
 	ProductID uint
 	UnitPrice decimal.Decimal

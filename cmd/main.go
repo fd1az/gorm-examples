@@ -35,7 +35,26 @@ func main() {
 	flag.Parse()
 
 	db := createGomDB(&cfg)
+
+	//db.AutoMigrate(&model.User{}, &model.Product{}, &model.Order{}, &model.OrderProduct{})
 	defer closeGormDBConnection(db)
+
+	//Insert Users
+	cu := []model.User{
+		{
+			Name:  "user1",
+			Email: "some1@email.com",
+		},
+		{
+			Name:  "user2",
+			Email: "some2@email.com",
+		},
+	}
+	err := CreateUser(db, cu)
+
+	if err != nil {
+		panic(err)
+	}
 
 	//Read Users
 	users := GetAllUsers(db, []model.User{})
@@ -55,25 +74,86 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	product1 := model.Product{
-		Title:       "producto1",
-		Description: "el mejor producto del mundo",
-		Price:       price,
+	products := []model.Product{
+		{
+			Title:       "producto1",
+			Description: "el mejor producto del mundo",
+			Price:       price,
+		},
+		{
+			Title:       "producto2",
+			Description: "el 2do mejor producto del mundo",
+			Price:       price,
+		},
+		{
+			Title:       "producto3",
+			Description: "el 3er mejor producto del mundo",
+			Price:       price,
+		},
+		{
+			Title:       "producto4",
+			Description: "el 4to mejor producto del mundo",
+			Price:       price,
+		},
+		{
+			Title:       "producto5",
+			Description: "el 6to mejor producto del mundo",
+			Price:       price,
+		},
 	}
 
-	err = CreateProduct(db, &product1)
+	err = CreateProduct(db, products)
 
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("ID: ", product1.ID)
-	fmt.Println("Title: ", product1.Title)
-	fmt.Println("Description", product1.Description)
-	fmt.Println("Price", product1.Price)
-	fmt.Println("Email", product1.Description)
-	fmt.Println("CreatedAt", product1.CreatedAt)
-	fmt.Println("UpdatedAt", product1.UpdatedAt)
+	// fmt.Println("ID: ", product1.ID)
+	// fmt.Println("Title: ", product1.Title)
+	// fmt.Println("Description", product1.Description)
+	// fmt.Println("Price", product1.Price)
+	// fmt.Println("Email", product1.Description)
+	// fmt.Println("CreatedAt", product1.CreatedAt)
+	// fmt.Println("UpdatedAt", product1.UpdatedAt)
 	fmt.Println("*------------------------*")
+
+	totalOrder := decimal.NewFromFloat(0.00)
+
+	for _, v := range products {
+		totalOrder = totalOrder.Add(v.Price)
+	}
+
+	order := model.Order{
+		UserID: users[0].ID,
+		Total:  totalOrder,
+		Status: "pending",
+		OrderProduct: []model.OrderProduct{
+			{
+				ProductID: products[0].ID,
+				UnitPrice: price,
+				Quantity:  1,
+			},
+			{
+				ProductID: products[1].ID,
+				UnitPrice: price,
+				Quantity:  2,
+			},
+			{
+				ProductID: products[2].ID,
+				UnitPrice: price,
+				Quantity:  3,
+			},
+		},
+	}
+
+	err = CreateOrder(db, &order)
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("ORDER ID: ", order.ID)
+	fmt.Println("ORDER ID: ", order.CreatedAt)
+
 }
 
 // createGomDB configuración de acceso a datos y GORM
@@ -135,6 +215,10 @@ func closeGormDBConnection(db *gorm.DB) {
 
 //CRUD ops
 
+func CreateUser(db *gorm.DB, p []model.User) error {
+	return db.Create(&p).Error
+}
+
 //GetAllUsers al ejecutar esta función podemos ver que el Query que se ejecuta en la DB, tiene la WHERE validando que delete_at sea NULL, esto es porque por defecto GORM utiliza soft delete cuando la delete_at existe en la tabla. Niceeee
 func GetAllUsers(db *gorm.DB, users []model.User) []model.User {
 
@@ -146,6 +230,10 @@ func GetAllUsers(db *gorm.DB, users []model.User) []model.User {
 	return users
 }
 
-func CreateProduct(db *gorm.DB, p *model.Product) error {
+func CreateProduct(db *gorm.DB, p []model.Product) error {
 	return db.Create(&p).Error
+}
+
+func CreateOrder(db *gorm.DB, o *model.Order) error {
+	return db.Create(&o).Error
 }
